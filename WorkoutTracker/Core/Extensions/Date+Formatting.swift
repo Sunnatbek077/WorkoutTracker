@@ -6,3 +6,18 @@
 //
 
 import Foundation
+
+extension Date {
+    var shortTime: String {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        return f.string(from: self)
+    }
+    
+    var workoutDate: String {
+        let f = DateFormatter()
+        f.dateStyle = .medium
+        f.timeStyle = .short
+        return f.string(from: self)
+    }
+}
