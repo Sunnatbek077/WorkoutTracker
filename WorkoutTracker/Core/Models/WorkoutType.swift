@@ -20,7 +20,7 @@ enum WorkoutType: String, CaseIterable, Codable {
         switch self {
         case .running: return "figure.run"
         case .cycling: return "figure.outdoor.cycle"
-        case .walking: return "walk"
+        case .walking: return "figure.walk"
         case .hiit: return "figure.highintensity.intervaltraining"
         }
     }
