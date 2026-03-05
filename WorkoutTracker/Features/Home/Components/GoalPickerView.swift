@@ -36,16 +36,16 @@ struct GoalPickerView: View {
                 }
             }
             .pickerStyle(.segmented)
-            .onChange(of: goalType) { _ in updateGoal() }
+            .onChange(of: goalType) { _, _ in updateGoal() }
 
             // Miqdor
             HStack {
                 if goalType == .calories {
                     CalorieStepperView(value: $calorieTarget)
-                        .onChange(of: calorieTarget) { _ in updateGoal() }
+                        .onChange(of: calorieTarget) { _, _ in updateGoal() }
                 } else {
                     DurationStepperView(value: $durationMinutes)
-                        .onChange(of: durationMinutes) { _ in updateGoal() }
+                        .onChange(of: durationMinutes) { _, _ in updateGoal() }
                 }
             }
         }
@@ -145,3 +145,4 @@ struct DurationStepperView: View {
         .padding(.horizontal, 8)
     }
 }
+
