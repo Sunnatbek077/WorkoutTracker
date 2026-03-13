@@ -54,7 +54,7 @@ struct MetricsSnapshot: Identifiable, Codable {
     let heartRate: Int
     let calories: Double
     let elapsedSeconds: Int
-
+    
     init(metrics: WorkoutMetrics) {
         self.id             = UUID()
         self.timestamp      = Date()
@@ -64,33 +64,3 @@ struct MetricsSnapshot: Identifiable, Codable {
     }
 }
 
-// MARK: - ActivityAttributes (Live Activity uchun)
-struct WorkoutAttributes: ActivityAttributes {
-
-    // Static: mashq boshida belgilanadi, o'zgarmaydi
-    let workoutType: String
-    let targetCalories: Int
-
-    // Dynamic: real-vaqtda yangilanadi
-    struct ContentState: Codable, Hashable {
-        var heartRate: Int
-        var calories: Double
-        var elapsedSeconds: Int
-        var pace: Double
-        var steps: Int
-        var status: String       // WorkoutStatus.rawValue
-
-        // Formatlangan vaqt (Widget UI uchun)
-        var formattedTime: String {
-            let m = elapsedSeconds / 60
-            let s = elapsedSeconds % 60
-            return String(format: "%02d:%02d", m, s)
-        }
-
-        // Progress (0.0 → 1.0)
-        func progress(targetCalories: Int) -> Double {
-            guard targetCalories > 0 else { return 0 }
-            return min(calories / Double(targetCalories), 1.0)
-        }
-    }
-}

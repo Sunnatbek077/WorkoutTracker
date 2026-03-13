@@ -10,22 +10,24 @@ import SwiftUI
 struct ActiveWorkoutView: View {
 
     @EnvironmentObject var viewModel: WorkoutViewModel
+    @Environment(\.dismiss) var dismiss
     @State private var showStopConfirm = false
     @State private var showSummary = false
 
     var body: some View {
         ZStack {
-            // Background
             Color(.systemBackground).ignoresSafeArea()
 
-            // MARK: - Asosiy kontent
             VStack(spacing: 0) {
+
+                // MARK: - Header
                 header
                     .padding(.horizontal)
                     .padding(.top, 16)
 
                 Spacer()
 
+                // MARK: - HR + Progress Ring
                 HStack(alignment: .center, spacing: 24) {
                     HeartRateView(
                         heartRate: viewModel.metrics.heartRate,
@@ -38,14 +40,20 @@ struct ActiveWorkoutView: View {
                     )
                 }
                 .padding(.horizontal, 24)
+                .opacity(viewModel.isPaused ? 0.4 : 1.0)
+                .animation(.easeInOut(duration: 0.3), value: viewModel.isPaused)
 
                 Spacer()
 
+                // MARK: - Metrikalar
                 metricsGrid
                     .padding(.horizontal, 16)
+                    .opacity(viewModel.isPaused ? 0.4 : 1.0)
+                    .animation(.easeInOut(duration: 0.3), value: viewModel.isPaused)
 
                 Spacer()
 
+                // MARK: - Kontrollar
                 WorkoutControlsView(
                     status: viewModel.status,
                     onPause: { viewModel.pauseWorkout() },
@@ -55,12 +63,7 @@ struct ActiveWorkoutView: View {
                 .padding(.bottom, 40)
             }
 
-            // MARK: - Pauza overlay (ZStack ichida — gesture'larni bloklamaydi)
-            if viewModel.isPaused {
-                pausedOverlay
-            }
-
-            // MARK: - LiveActivity badge (yuqorida)
+            // MARK: - LiveActivity badge
             if viewModel.liveActivityActive {
                 VStack {
                     liveActivityBadge
@@ -84,7 +87,9 @@ struct ActiveWorkoutView: View {
         } message: {
             Text("Mashqni to'xtatib natijani saqlaysizmi?")
         }
-        .fullScreenCover(isPresented: $showSummary) {
+        .fullScreenCover(isPresented: $showSummary, onDismiss: {
+            dismiss()
+        }) {
             SummaryView()
                 .environmentObject(viewModel)
         }
@@ -102,9 +107,25 @@ struct ActiveWorkoutView: View {
 
             Spacer()
 
+            if viewModel.isPaused {
+                HStack(spacing: 4) {
+                    Image(systemName: "pause.fill")
+                        .font(.caption2)
+                    Text("Pauza")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                }
+                .foregroundStyle(.orange)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(.orange.opacity(0.15))
+                .clipShape(Capsule())
+                .transition(.scale.combined(with: .opacity))
+            }
+
             Text(viewModel.metrics.formattedTime)
                 .font(.system(.title2, design: .monospaced, weight: .semibold))
-                .foregroundStyle(.primary)
+                .foregroundStyle(viewModel.isPaused ? .secondary : .primary)
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 16)
@@ -112,6 +133,7 @@ struct ActiveWorkoutView: View {
             RoundedRectangle(cornerRadius: 14)
                 .fill(Color(.secondarySystemBackground))
         )
+        .animation(.spring(duration: 0.3), value: viewModel.isPaused)
     }
 
     // MARK: - Metrikalar
@@ -135,30 +157,6 @@ struct ActiveWorkoutView: View {
                 unit: "/km",
                 color: .blue
             )
-        }
-    }
-
-    // MARK: - Pauza overlay
-    private var pausedOverlay: some View {
-        ZStack {
-            Color.black.opacity(0.4)
-                .ignoresSafeArea()
-                .allowsHitTesting(false)
-
-            VStack(spacing: 12) {
-                Image(systemName: "pause.circle.fill")
-                    .font(.system(size: 64))
-                    .foregroundStyle(.orange)
-
-                Text("Pauza")
-                    .font(.system(.title, design: .rounded, weight: .bold))
-                    .foregroundStyle(.white)
-
-                Text(viewModel.metrics.formattedTime)
-                    .font(.system(.title3, design: .monospaced))
-                    .foregroundStyle(.white.opacity(0.7))
-            }
-            .allowsHitTesting(false)
         }
     }
 
