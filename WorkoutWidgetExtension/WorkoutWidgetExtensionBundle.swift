@@ -12,5 +12,6 @@ import SwiftUI
 struct WorkoutWidgetExtensionBundle: WidgetBundle {
     var body: some Widget {
         WorkoutLiveActivityWidget()
+        WorkoutHomeWidget()
     }
 }

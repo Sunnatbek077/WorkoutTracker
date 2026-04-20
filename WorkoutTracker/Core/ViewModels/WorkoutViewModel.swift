@@ -124,6 +124,13 @@ final class WorkoutViewModel: ObservableObject {
             session?.currentMetrics = metrics
             status = .finished
             endLiveActivity()
+            // Widget ma'lumotini saqlash
+            if let finishedSession = session {
+                WorkoutWidgetDataManager.shared.saveWorkout(
+                    session: finishedSession,
+                    metrics: metrics
+                )
+            }
             print("✅ Mashq saqlandi: \(hkWorkout?.uuid.uuidString ?? "mock")")
         } catch {
             errorMessage = "Mashq saqlanmadi: \(error.localizedDescription)"
